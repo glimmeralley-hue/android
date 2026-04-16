@@ -21,13 +21,13 @@
         android:label="WellnessApp"
         android:theme="@style/Theme.WellnessApp">
         <activity
-            android:name=".PRODUCTS"
+            android:name=".PRODUCTSActivity"
             android:exported="false" />
         <activity
-            android:name=".payment"
+            android:name=".PaymentActivity"
             android:exported="false" />
         <activity
-            android:name=".add_product"
+            android:name=".AddProductActivity"
             android:exported="false" />
         <activity
             android:name=".SignUpActivity"

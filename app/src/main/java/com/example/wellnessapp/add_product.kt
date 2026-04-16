@@ -14,12 +14,10 @@ class AddProductActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_product)
 
-        // Binding IDs - ensuring no red lines
         val etProductName = findViewById<EditText>(R.id.etProductName)
         val etProductPrice = findViewById<EditText>(R.id.etProductPrice)
         val btnSaveProduct = findViewById<Button>(R.id.btnSaveProduct)
 
-        // Initializing our Database reference
         val database = FirebaseDatabase.getInstance().getReference("Products")
 
         btnSaveProduct.setOnClickListener {
@@ -29,21 +27,18 @@ class AddProductActivity : AppCompatActivity() {
             if (name.isEmpty() || price.isEmpty()) {
                 Toast.makeText(this, "Please fill in all details", Toast.LENGTH_SHORT).show()
             } else {
-                // Generate unique key for this product entry
                 val productId = database.push().key ?: ""
 
-                // Create the data object
-                val productData = mapOf(
-                    "id" to productId,
-                    "name" to name,
-                    "price" to price
+                // Using ProductModel from Models.kt
+                val productData = ProductModel(
+                    id = productId,
+                    name = name,
+                    price = price
                 )
 
-                // Push to Firebase Database
                 database.child(productId).setValue(productData).addOnSuccessListener {
                     Toast.makeText(this, "Successfully Saved to Database", Toast.LENGTH_SHORT).show()
 
-                    // Transition to Payment with the product info
                     val intent = Intent(this, PaymentActivity::class.java)
                     intent.putExtra("PRODUCT_NAME", name)
                     intent.putExtra("PRODUCT_PRICE", price)

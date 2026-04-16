@@ -20,9 +20,7 @@ class SignUpActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_signup)
 
-        // 1. Initialize Firebase Auth and Realtime Database
         auth = FirebaseAuth.getInstance()
-        // This points to the root of your URL: https://glimmer-dad0e-default-rtdb.firebaseio.com/
         database = FirebaseDatabase.getInstance().getReference("Users")
 
         val etName = findViewById<EditText>(R.id.etName)
@@ -38,33 +36,29 @@ class SignUpActivity : AppCompatActivity() {
             val password = etPassword.text.toString().trim()
             val weight = etWeight.text.toString().trim()
 
-            // Simple Validation
             if (email.isEmpty() || password.length < 8 || name.isEmpty()) {
                 Toast.makeText(this, "Check fields (Password must be 8+ chars)", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // 2. Create User in Firebase Authentication
             auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
                         val uid = auth.currentUser?.uid
-
-                        // 3. Prepare the data "Table" entries
-                        val userProfile = hashMapOf(
-                            "uid" to uid,
-                            "name" to name,
-                            "email" to email,
-                            "weight" to weight,
-                            "created_at" to System.currentTimeMillis().toString()
+                        
+                        // Using the User data class for structured data
+                        val userProfile = User(
+                            uid = uid,
+                            name = name,
+                            email = email,
+                            weight = weight,
+                            createdAt = System.currentTimeMillis()
                         )
 
-                        // 4. Push data to the Realtime Database URL
                         if (uid != null) {
                             database.child(uid).setValue(userProfile)
                                 .addOnSuccessListener {
-                                    // Success! Data is now visible in your browser screenshot
-                                    Toast.makeText(this, "Welcome to Glimmer, $name", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(this, "Welcome to WellnessApp, $name", Toast.LENGTH_SHORT).show()
                                     startActivity(Intent(this, MainActivity::class.java))
                                     finish()
                                 }

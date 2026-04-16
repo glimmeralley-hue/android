@@ -38,7 +38,16 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, PersonalizedActivity::class.java))
         }
 
-        // 3. iOS Bottom Navigation Handling
+        // 3. New Component Buttons
+        findViewById<Button>(R.id.btnShop).setOnClickListener {
+            startActivity(Intent(this, PRODUCTSActivity::class.java))
+        }
+
+        findViewById<Button>(R.id.btnAddProductAdmin).setOnClickListener {
+            startActivity(Intent(this, AddProductActivity::class.java))
+        }
+
+        // 4. iOS Bottom Navigation Handling
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNavigation)
         bottomNav.selectedItemId = R.id.nav_home
         
@@ -47,7 +56,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_home -> true // Current
                 R.id.nav_recipes -> {
                     startActivity(Intent(this, RecipesActivity::class.java))
-                    false // Don't highlight if we're moving to a full activity without fragment
+                    false
                 }
                 R.id.nav_biostats -> {
                     startActivity(Intent(this, BiostatsActivity::class.java))
@@ -64,11 +73,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        
-        // Ensure Home is selected when returning to dashboard
         findViewById<BottomNavigationView>(R.id.bottomNavigation).selectedItemId = R.id.nav_home
 
-        // Update profile photo thumb
         val imgThumb = findViewById<ImageView>(R.id.imgProfileThumb)
         val sharedPref = getSharedPreferences("UserStats", MODE_PRIVATE)
         val savedUriString = sharedPref.getString("profile_uri", null)

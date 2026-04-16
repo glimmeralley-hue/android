@@ -93,6 +93,29 @@
                 android:textColor="#FFFFFF"
                 app:cornerRadius="12dp" />
 
+            <!-- New Button for Products/Shop -->
+            <Button
+                android:id="@+id/btnShop"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:layout_marginBottom="12dp"
+                android:backgroundTint="#39FF14"
+                android:text="SHOP WELLNESS"
+                android:textColor="#000000"
+                android:textStyle="bold"
+                app:cornerRadius="12dp" />
+
+            <!-- New Button for Admin: Add Product -->
+            <Button
+                android:id="@+id/btnAddProductAdmin"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:layout_marginBottom="12dp"
+                android:backgroundTint="#1C1C1E"
+                android:text="ADMIN: ADD PRODUCT"
+                android:textColor="#8E8E93"
+                app:cornerRadius="12dp" />
+
         </LinearLayout>
     </ScrollView>
 
