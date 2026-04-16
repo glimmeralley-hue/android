@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000"
+    android:orientation="vertical"
+    android:padding="32dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Biostats"
+        android:textColor="#FFFFFF"
+        android:textSize="42sp"
+        android:fontFamily="sans-serif-black"
+        android:letterSpacing="-0.03"
+        android:layout_marginTop="40dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Precision tracking."
+        android:textColor="#8E8E93"
+        android:textSize="16sp"
+        android:fontFamily="sans-serif-light"
+        android:layout_marginBottom="48dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="BODY WEIGHT (KG)"
+        android:textColor="#8E8E93"
+        android:textSize="12sp"
+        android:fontFamily="sans-serif-medium"
+        android:letterSpacing="0.05" />
+
+    <EditText
+        android:id="@+id/editWeight"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@android:color/transparent"
+        android:hint="68"
+        android:textColorHint="#48484A"
+        android:textColor="#FFFFFF"
+        android:inputType="numberDecimal"
+        android:textSize="28sp"
+        android:fontFamily="sans-serif-light"
+        android:layout_marginBottom="24dp" />
+    <TextView
+        android:id="@+id/tvBMIResult"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:text="BMI: --"
+        android:textColor="#FFFFFF"
+        android:textSize="24sp"
+        android:fontFamily="sans-serif-medium"
+        android:gravity="center" />
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="HEIGHT (CM)"
+        android:textColor="#8E8E93"
+        android:textSize="12sp"
+        android:fontFamily="sans-serif-medium"
+        android:letterSpacing="0.05" />
+
+    <EditText
+        android:id="@+id/editHeight"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@android:color/transparent"
+        android:hint="188"
+        android:textColorHint="#48484A"
+        android:textColor="#FFFFFF"
+        android:inputType="number"
+        android:textSize="28sp"
+        android:fontFamily="sans-serif-light"
+        android:layout_marginBottom="40dp" />
+
+    <Button
+        android:id="@+id/btnSaveStats"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:text="Update Metrics"
+        android:backgroundTint="#FFFFFF"
+        android:textColor="#000000"
+        android:textAllCaps="false"
+        android:textSize="17sp"
+        android:fontFamily="sans-serif-medium"
+        app:cornerRadius="14dp"
+        android:layout_marginBottom="12dp" />
+
+    <Button
+        android:id="@+id/btnHomeBiostats"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:text="Back"
+        android:backgroundTint="#1C1C1E"
+        android:textColor="#FFFFFF"
+        android:textAllCaps="false"
+        android:textSize="17sp"
+        android:fontFamily="sans-serif-medium"
+        app:cornerRadius="14dp" />
+
+</LinearLayout>
