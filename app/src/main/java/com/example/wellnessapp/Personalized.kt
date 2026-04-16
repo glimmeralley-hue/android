@@ -28,12 +28,19 @@ class PersonalizedActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_personalized)
 
+        // Apply Global Morphic Theme
+        ThemeManager.applyTheme(this)
+
         auraVoice = AuraVoice(this)
 
         val rvChat = findViewById<RecyclerView>(R.id.rvChatRoutine)
         val etInput = findViewById<EditText>(R.id.etMessageInputRoutine)
         val btnSend = findViewById<CardView>(R.id.btnSendRoutine)
         val loadingOverlay = findViewById<View>(R.id.loadingOverlay)
+
+        // Load Persistent Chat History
+        val savedMessages = ChatPersistence.loadMessages(this, "aura_chat")
+        messages.addAll(savedMessages)
 
         chatAdapter = ChatAdapter(messages)
         rvChat.layoutManager = LinearLayoutManager(this)
@@ -58,15 +65,20 @@ class PersonalizedActivity : AppCompatActivity() {
         )
 
         val systemContext = """
-            You are 'Aura', a highly personalized fitness architect. 
+            You are 'Aura', a highly personalized fitness architect (v 3.1). 
             Your personality is encouraging but analytical and slightly futuristic. 
             You remember the user's progress. 
             Always refer to yourself as Aura. Keep responses concise and impactful.
+            Do not use markdown formatting like asterisks or hashes.
         """.trimIndent()
 
-        val welcomeMsg = "Aura online. I'm ready to architect your evolution. What are we targeting today?"
-        addMessage(welcomeMsg, false)
-        etInput.postDelayed({ auraVoice.speak(welcomeMsg) }, 1000)
+        if (messages.isEmpty()) {
+            val welcomeMsg = "Aura (v 3.1) online. I'm ready to architect your evolution. What are we targeting today?"
+            addMessage(welcomeMsg, false)
+            etInput.postDelayed({ auraVoice.speak(welcomeMsg) }, 1000)
+        } else {
+            rvChat.scrollToPosition(messages.size - 1)
+        }
 
         btnSend.setOnClickListener {
             val userText = etInput.text.toString().trim()
@@ -82,8 +94,9 @@ class PersonalizedActivity : AppCompatActivity() {
                         withContext(Dispatchers.Main) {
                             loadingOverlay.visibility = View.GONE
                             response.text?.let { 
-                                addMessage(it, false)
-                                auraVoice.speak(it)
+                                val cleanText = it.replace("*", "").replace("#", "")
+                                addMessage(cleanText, false)
+                                auraVoice.speak(cleanText)
                             }
                         }
                     } catch (e: Exception) {
@@ -101,6 +114,7 @@ class PersonalizedActivity : AppCompatActivity() {
         messages.add(ChatMessage(text, isUser))
         chatAdapter.notifyItemInserted(messages.size - 1)
         findViewById<RecyclerView>(R.id.rvChatRoutine).scrollToPosition(messages.size - 1)
+        ChatPersistence.saveMessages(this, "aura_chat", messages)
     }
 
     override fun onDestroy() {

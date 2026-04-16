@@ -35,7 +35,7 @@ class BiostatsActivity : AppCompatActivity() {
         val database = FirebaseDatabase.getInstance().getReference("Biostats")
 
         val generativeModel = GenerativeModel(
-            modelName = "gemini-1.5-flash-latest",
+            modelName = "gemini-2.0-flash",
             apiKey = apiKey
         )
 

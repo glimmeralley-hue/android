@@ -26,13 +26,26 @@ class MainActivity2 : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_nutrition)
 
+        // Apply Global Morphic Theme
+        ThemeManager.applyTheme(this)
+
         val rvChat = findViewById<RecyclerView>(R.id.rvChat)
         val etInput = findViewById<EditText>(R.id.etMessageInput)
         val btnSend = findViewById<CardView>(R.id.btnSend)
 
+        // Load Persistent Chat History
+        val savedMessages = ChatPersistence.loadMessages(this, "nutrition_chat")
+        messages.addAll(savedMessages)
+
         chatAdapter = ChatAdapter(messages)
         rvChat.layoutManager = LinearLayoutManager(this)
         rvChat.adapter = chatAdapter
+        
+        if (messages.isEmpty()) {
+            addMessage("Hello! I'm your Nutrition AI (v 3.1). Ask me anything about food, calories, or diet plans.", false)
+        } else {
+            rvChat.scrollToPosition(messages.size - 1)
+        }
 
         val config = generationConfig {
             temperature = 0.7f
@@ -52,8 +65,6 @@ class MainActivity2 : AppCompatActivity() {
             safetySettings = safetySettings
         )
 
-        addMessage("Hello! I'm your Nutrition AI. Ask me anything about food, calories, or diet plans.", false)
-
         btnSend.setOnClickListener {
             val userText = etInput.text.toString().trim()
             if (userText.isNotEmpty()) {
@@ -64,7 +75,10 @@ class MainActivity2 : AppCompatActivity() {
                     try {
                         val response = generativeModel.generateContent("You are a professional nutritionist. Answer this: $userText")
                         withContext(Dispatchers.Main) {
-                            response.text?.let { addMessage(it, false) }
+                            response.text?.let { 
+                                val cleanText = it.replace("*", "").replace("#", "")
+                                addMessage(cleanText, false) 
+                            }
                         }
                     } catch (e: Exception) {
                         withContext(Dispatchers.Main) {
@@ -80,5 +94,8 @@ class MainActivity2 : AppCompatActivity() {
         messages.add(ChatMessage(text, isUser))
         chatAdapter.notifyItemInserted(messages.size - 1)
         findViewById<RecyclerView>(R.id.rvChat).scrollToPosition(messages.size - 1)
+        
+        // Save history every time a message is added
+        ChatPersistence.saveMessages(this, "nutrition_chat", messages)
     }
 }

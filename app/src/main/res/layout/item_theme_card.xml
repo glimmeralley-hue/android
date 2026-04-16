@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/themeCardRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="24dp"
     app:cardCornerRadius="32dp"
-    app:cardElevation="0dp">
+    app:cardElevation="0dp"
+    android:backgroundTint="@android:color/transparent">
 
     <RelativeLayout
         android:id="@+id/themeBackground"
@@ -17,7 +19,7 @@
             android:id="@+id/tvThemeName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Stark White"
+            android:text="Theme Name"
             android:textColor="#FFFFFF"
             android:textSize="28sp"
             android:fontFamily="sans-serif-black"
@@ -29,30 +31,50 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/tvThemeName"
             android:layout_marginTop="8dp"
-            android:text="Pure monochrome precision."
-            android:textColor="#80FFFFFF"
+            android:text="Theme description goes here."
+            android:textColor="#B3FFFFFF"
             android:fontFamily="sans-serif-light"/>
 
-        <ImageView
-            android:id="@+id/ivThemePreview"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
+        <!-- Morphic Glass Ornament instead of generic icon -->
+        <View
+            android:id="@+id/glassOrnament"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
             android:layout_centerInParent="true"
-            android:scaleType="centerInside"
-            app:tint="#FFFFFF"
-            android:src="@android:drawable/ic_menu_gallery"/>
+            android:background="@android:drawable/ic_menu_gallery"
+            android:visibility="gone"/>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_centerInParent="true"
+            app:cardCornerRadius="75dp"
+            app:cardElevation="20dp"
+            android:id="@+id/morphicCircle">
+            <View
+                android:id="@+id/innerGlass"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+        </androidx.cardview.widget.CardView>
 
         <Button
             android:id="@+id/btnApplyTheme"
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:layout_alignParentBottom="true"
-            android:text="Apply Theme"
+            android:text="Synchronize Theme"
             android:textAllCaps="false"
             android:fontFamily="sans-serif-medium"
             android:backgroundTint="#FFFFFF"
             android:textColor="#000000"
             app:cornerRadius="28dp"/>
+
+        <!-- Hide the old preview image -->
+        <ImageView
+            android:id="@+id/ivThemePreview"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone"/>
 
     </RelativeLayout>
 </androidx.cardview.widget.CardView>

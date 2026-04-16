@@ -1,12 +1,17 @@
 package com.example.wellnessapp
 
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Base64
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import coil.load
 import com.example.wellnessapp.databinding.ActivityPaymentBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -33,15 +38,43 @@ class PaymentActivity : AppCompatActivity() {
         binding = ActivityPaymentBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        ThemeManager.applyTheme(this)
+
         val name = intent.getStringExtra("PRODUCT_NAME") ?: "Wellness Product"
-        val price = intent.getStringExtra("PRODUCT_PRICE") ?: "1" // Default to 1 for testing
+        val price = intent.getStringExtra("PRODUCT_PRICE") ?: "1"
+        val imageSource = intent.getStringExtra("PRODUCT_IMAGE")
 
         binding.txtProductName.text = name
         binding.txtProductCost.text = "Kes $price"
 
-        // Initialize Retrofit
+        if (imageSource != null) {
+            if (!imageSource.startsWith("http")) {
+                try {
+                    val imageBytes = Base64.decode(imageSource, Base64.DEFAULT)
+                    val decodedImage = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+                    binding.imgProduct.setImageBitmap(decodedImage)
+                } catch (e: Exception) {
+                    binding.imgProduct.setImageResource(android.R.drawable.ic_menu_report_image)
+                }
+            } else {
+                binding.imgProduct.load(imageSource) {
+                    crossfade(true)
+                    placeholder(android.R.drawable.ic_menu_gallery)
+                    error(android.R.drawable.ic_menu_report_image)
+                }
+            }
+        }
+
+        // Initialize Retrofit with Logging
+        val logging = HttpLoggingInterceptor()
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY)
+        val client = OkHttpClient.Builder()
+            .addInterceptor(logging)
+            .build()
+
         val retrofit = Retrofit.Builder()
             .baseUrl("https://sandbox.safaricom.co.ke/")
+            .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
@@ -54,7 +87,6 @@ class PaymentActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
             
-            // Format phone to 2547XXXXXXXX
             var formattedPhone = phone
             if (formattedPhone.startsWith("0")) {
                 formattedPhone = "254" + formattedPhone.substring(1)
@@ -66,24 +98,28 @@ class PaymentActivity : AppCompatActivity() {
                 if (token != null) {
                     performSTKPush(token, formattedPhone, price.toInt(), name)
                 } else {
-                    Toast.makeText(this, "Failed to get Access Token", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Aura: Secure Token Negotiation Failed.", Toast.LENGTH_SHORT).show()
                 }
             }
         }
     }
 
     private fun getAccessToken(callback: (String?) -> Unit) {
-        val auth = "Basic " + Base64.encodeToString(
-            "$CONSUMER_KEY:$CONSUMER_SECRET".toByteArray(),
-            Base64.NO_WRAP
-        )
+        val keys = "$CONSUMER_KEY:$CONSUMER_SECRET"
+        val auth = "Basic " + Base64.encodeToString(keys.toByteArray(), Base64.NO_WRAP)
 
         mpesaService.getAccessToken(auth).enqueue(object : Callback<AccessToken> {
             override fun onResponse(call: Call<AccessToken>, response: Response<AccessToken>) {
-                callback(response.body()?.accessToken)
+                if (response.isSuccessful) {
+                    callback(response.body()?.accessToken)
+                } else {
+                    Log.e("MpesaError", "Token Error: ${response.code()} ${response.errorBody()?.string()}")
+                    callback(null)
+                }
             }
 
             override fun onFailure(call: Call<AccessToken>, t: Throwable) {
+                Log.e("MpesaError", "Network Failure: ${t.message}")
                 callback(null)
             }
         })

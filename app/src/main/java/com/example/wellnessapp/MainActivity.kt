@@ -10,7 +10,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
-import androidx.core.net.toUri
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.BlockThreshold
 import com.google.ai.client.generativeai.type.HarmCategory
@@ -29,18 +28,13 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
-        val settingsPref = getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
-        val bgColor = settingsPref.getInt("theme_bg", Color.BLACK)
-        
         setContentView(R.layout.activity_main)
         
-        findViewById<View>(android.R.id.content).setBackgroundColor(bgColor)
+        applyTheme()
 
         auraNotifications = AuraNotificationManager(this)
 
-        val profileCircle = findViewById<CardView>(R.id.profileCircle)
-        profileCircle.setOnClickListener {
+        findViewById<CardView>(R.id.profileCircle).setOnClickListener {
             startActivity(Intent(this, ProfileActivity::class.java))
         }
 
@@ -98,6 +92,32 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun applyTheme() {
+        val settingsPref = getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
+        val bgColor = settingsPref.getInt("theme_bg", Color.BLACK)
+        val accentColor = settingsPref.getInt("theme_accent", Color.WHITE)
+        
+        val rootLayout = findViewById<View>(R.id.mainRootLayout)
+        rootLayout.setBackgroundColor(bgColor)
+        
+        // Update header elements
+        findViewById<TextView>(R.id.tvAppTitle).setTextColor(accentColor)
+        
+        // Update Card backgrounds with slight transparency for "Glass" effect
+        val cardAlpha = Color.argb(40, Color.red(accentColor), Color.green(accentColor), Color.blue(accentColor))
+        
+        val cards = listOf(
+            R.id.cardWeeklySummary, R.id.cardBiostats, R.id.cardNutrition, 
+            R.id.cardRecipes, R.id.cardRoutines
+        )
+        
+        cards.forEach { id ->
+            findViewById<CardView>(id)?.setCardBackgroundColor(cardAlpha)
+        }
+
+        findViewById<BottomNavigationView>(R.id.bottomNavigation).setBackgroundColor(bgColor)
+    }
+
     private fun loadWeeklyInsight() {
         val tvSummary = findViewById<TextView>(R.id.tvWeeklySummary)
         val tvRating = findViewById<TextView>(R.id.tvQLRating)
@@ -150,11 +170,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        applyTheme()
         findViewById<BottomNavigationView>(R.id.bottomNavigation).selectedItemId = R.id.nav_home
-
-        val settingsPref = getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
-        val bgColor = settingsPref.getInt("theme_bg", Color.BLACK)
-        findViewById<View>(android.R.id.content).setBackgroundColor(bgColor)
 
         val imgThumb = findViewById<ImageView>(R.id.imgProfileThumb)
         val sharedPref = getSharedPreferences("UserStats", MODE_PRIVATE)

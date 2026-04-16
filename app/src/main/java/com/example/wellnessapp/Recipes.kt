@@ -26,13 +26,24 @@ class RecipesActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_recipes)
 
+        ThemeManager.applyTheme(this)
+
         val rvChat = findViewById<RecyclerView>(R.id.rvChatRecipes)
         val etInput = findViewById<EditText>(R.id.etMessageInputRecipes)
         val btnSend = findViewById<CardView>(R.id.btnSendRecipes)
 
+        val savedMessages = ChatPersistence.loadMessages(this, "recipes_chat")
+        messages.addAll(savedMessages)
+
         chatAdapter = ChatAdapter(messages)
         rvChat.layoutManager = LinearLayoutManager(this)
         rvChat.adapter = chatAdapter
+        
+        if (messages.isEmpty()) {
+            addMessage("Greetings! I am your personal Chef AI (v 3.1). Tell me what ingredients you have, or ask for a specific healthy recipe.", false)
+        } else {
+            rvChat.scrollToPosition(messages.size - 1)
+        }
 
         val config = generationConfig {
             temperature = 0.8f
@@ -52,8 +63,6 @@ class RecipesActivity : AppCompatActivity() {
             safetySettings = safetySettings
         )
 
-        addMessage("Greetings! I am your personal Chef AI (v2.0). Tell me what ingredients you have, or ask for a specific healthy recipe.", false)
-
         btnSend.setOnClickListener {
             val userText = etInput.text.toString().trim()
             if (userText.isNotEmpty()) {
@@ -64,7 +73,10 @@ class RecipesActivity : AppCompatActivity() {
                     try {
                         val response = generativeModel.generateContent("You are a professional chef specializing in healthy, wellness-focused meals. Provide a detailed recipe or cooking advice for: $userText")
                         withContext(Dispatchers.Main) {
-                            response.text?.let { addMessage(it, false) }
+                            response.text?.let { 
+                                val cleanText = it.replace("*", "").replace("#", "")
+                                addMessage(cleanText, false) 
+                            }
                         }
                     } catch (e: Exception) {
                         withContext(Dispatchers.Main) {
@@ -80,5 +92,6 @@ class RecipesActivity : AppCompatActivity() {
         messages.add(ChatMessage(text, isUser))
         chatAdapter.notifyItemInserted(messages.size - 1)
         findViewById<RecyclerView>(R.id.rvChatRecipes).scrollToPosition(messages.size - 1)
+        ChatPersistence.saveMessages(this, "recipes_chat", messages)
     }
 }

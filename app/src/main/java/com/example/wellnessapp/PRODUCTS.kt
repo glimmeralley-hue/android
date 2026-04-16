@@ -26,6 +26,7 @@ class PRODUCTSActivity : AppCompatActivity() {
             val intent = Intent(this, PaymentActivity::class.java)
             intent.putExtra("PRODUCT_NAME", clickedItem.name)
             intent.putExtra("PRODUCT_PRICE", clickedItem.price)
+            intent.putExtra("PRODUCT_IMAGE", clickedItem.imageUrl) // Pass the image data
             startActivity(intent)
         }
         recyclerView.adapter = adapter

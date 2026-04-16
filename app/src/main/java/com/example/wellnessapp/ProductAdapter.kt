@@ -1,5 +1,7 @@
 package com.example.wellnessapp
 
+import android.graphics.BitmapFactory
+import android.util.Base64
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,13 +28,26 @@ class ProductAdapter(
 
     override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
         val product = productList[position]
-        holder.tvProductName.text = product.name
-        holder.tvProductPrice.text = "Kes ${product.price}"
+        holder.tvProductName.text = product.name ?: "Unknown Product"
+        holder.tvProductPrice.text = "Kes ${product.price ?: "0"}"
         
-        holder.ivProductImage.load(product.imageUrl) {
-            crossfade(true)
-            placeholder(android.R.drawable.ic_menu_gallery)
-            error(android.R.drawable.ic_menu_report_image)
+        val imageSource = product.imageUrl
+        if (imageSource != null && !imageSource.startsWith("http")) {
+            // Assume it's Base64
+            try {
+                val imageBytes = Base64.decode(imageSource, Base64.DEFAULT)
+                val decodedImage = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+                holder.ivProductImage.setImageBitmap(decodedImage)
+            } catch (e: Exception) {
+                holder.ivProductImage.setImageResource(android.R.drawable.ic_menu_report_image)
+            }
+        } else {
+            // It's a URL or null
+            holder.ivProductImage.load(imageSource) {
+                crossfade(true)
+                placeholder(android.R.drawable.ic_menu_gallery)
+                error(android.R.drawable.ic_menu_report_image)
+            }
         }
 
         holder.itemView.setOnClickListener { onItemClick(product) }
