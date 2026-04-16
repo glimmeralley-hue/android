@@ -1,53 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="20dp"
-    android:background="#000000">
+    android:background="#000000"
+    android:fillViewport="true">
 
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Glimmer Inventory"
-        android:textColor="#39FF14"
-        android:textSize="26sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="30dp"
-        android:textAlignment="center"/>
+        android:orientation="vertical"
+        android:padding="24dp">
 
-    <EditText
-        android:id="@+id/etProductName"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Product Name"
-        android:textColorHint="#777777"
-        android:textColor="#FFFFFF"
-        android:backgroundTint="#39FF14"
-        android:padding="15dp"
-        android:layout_marginBottom="15dp"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="New Product"
+            android:textColor="#FFFFFF"
+            android:textSize="32sp"
+            android:fontFamily="sans-serif-light"
+            android:layout_marginBottom="32dp"
+            android:textAlignment="center"/>
 
-    <EditText
-        android:id="@+id/etProductPrice"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Price (Kes)"
-        android:textColorHint="#777777"
-        android:textColor="#FFFFFF"
-        android:backgroundTint="#39FF14"
-        android:inputType="numberDecimal"
-        android:padding="15dp"
-        android:layout_marginBottom="30dp"/>
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardProductImage"
+            android:layout_width="160dp"
+            android:layout_height="160dp"
+            android:layout_gravity="center"
+            android:layout_marginBottom="32dp"
+            app:cardCornerRadius="20dp"
+            app:cardBackgroundColor="#1C1C1E"
+            app:cardElevation="0dp">
 
-    <Button
-        android:id="@+id/btnSaveProduct"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:text="SAVE TO FIREBASE"
-        android:textColor="#000000"
-        android:textStyle="bold"
-        android:backgroundTint="#39FF14"
-        app:cornerRadius="12dp" />
+            <ImageView
+                android:id="@+id/ivProductImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@android:drawable/ic_menu_camera"
+                app:tint="#444444" />
+        </androidx.cardview.widget.CardView>
 
-</LinearLayout>
+        <!-- Glassmorphism Container -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="24dp"
+            app:cardBackgroundColor="#1AFFFFFF"
+            app:cardElevation="0dp"
+            android:layout_marginBottom="24dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <EditText
+                    android:id="@+id/etProductName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Product Name"
+                    android:textColorHint="#8E8E93"
+                    android:textColor="#FFFFFF"
+                    android:background="@android:color/transparent"
+                    android:fontFamily="sans-serif-light"
+                    android:padding="12dp"/>
+
+                <View android:layout_width="match_parent" android:layout_height="0.5dp" android:background="#33FFFFFF" />
+
+                <EditText
+                    android:id="@+id/etProductPrice"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Price (Kes)"
+                    android:textColorHint="#8E8E93"
+                    android:textColor="#FFFFFF"
+                    android:background="@android:color/transparent"
+                    android:inputType="numberDecimal"
+                    android:fontFamily="sans-serif-light"
+                    android:padding="12dp"/>
+
+                <View android:layout_width="match_parent" android:layout_height="0.5dp" android:background="#33FFFFFF" />
+
+                <EditText
+                    android:id="@+id/etProductDescription"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Description"
+                    android:textColorHint="#8E8E93"
+                    android:textColor="#FFFFFF"
+                    android:background="@android:color/transparent"
+                    android:fontFamily="sans-serif-light"
+                    android:padding="12dp"
+                    android:minLines="3"
+                    android:gravity="top"/>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <Button
+            android:id="@+id/btnSaveProduct"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="Add to Collection"
+            android:textColor="#000000"
+            android:fontFamily="sans-serif-medium"
+            android:backgroundTint="#FFFFFF"
+            app:cornerRadius="28dp" />
+
+    </LinearLayout>
+</ScrollView>

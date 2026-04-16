@@ -1,7 +1,9 @@
 package com.example.wellnessapp
 
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
@@ -16,13 +18,17 @@ class ProfileActivity : AppCompatActivity() {
     private lateinit var imgProfile: ImageView
     private var selectedImageUri: Uri? = null
 
-    // 1. Initialize the Image Picker
     private val pickImage = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let {
             selectedImageUri = it
             imgProfile.setImageURI(it)
-            // Persist permission for the URI so it loads after app restart
-            contentResolver.takePersistableUriPermission(it, android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            imgProfile.imageTintList = null // Remove tint when image is loaded
+            
+            try {
+                contentResolver.takePersistableUriPermission(it, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            } catch (e: Exception) {
+                // Fallback for non-persistable URIs
+            }
         }
     }
 
@@ -34,27 +40,45 @@ class ProfileActivity : AppCompatActivity() {
         val editGoal = findViewById<EditText>(R.id.editGoal)
         val editMedical = findViewById<EditText>(R.id.editMedicalHistory)
         val btnSave = findViewById<Button>(R.id.btnSaveProfile)
+        val btnSettings = findViewById<CardView>(R.id.btnSettings)
+        val btnLogout = findViewById<Button>(R.id.btnLogout)
         val imageContainer = findViewById<CardView>(R.id.profileImageContainer)
         imgProfile = findViewById(R.id.imgProfileFull)
 
         val sharedPref = getSharedPreferences("UserStats", Context.MODE_PRIVATE)
 
-        // 2. Load existing data on Startup
         editAge.setText(sharedPref.getString("user_age", ""))
         editGoal.setText(sharedPref.getString("user_goal", ""))
         editMedical.setText(sharedPref.getString("user_medical", ""))
 
         val savedUriString = sharedPref.getString("profile_uri", null)
         if (savedUriString != null) {
-            imgProfile.setImageURI(Uri.parse(savedUriString))
+            try {
+                val uri = Uri.parse(savedUriString)
+                imgProfile.setImageURI(uri)
+                imgProfile.imageTintList = null
+            } catch (e: Exception) {
+                imgProfile.setImageResource(android.R.drawable.ic_menu_camera)
+            }
         }
 
-        // 3. Trigger Gallery
         imageContainer.setOnClickListener {
             pickImage.launch("image/*")
         }
 
-        // 4. Save All Data
+        btnSettings.setOnClickListener {
+            startActivity(Intent(this, SettingsActivity::class.java))
+        }
+
+        btnLogout.setOnClickListener {
+            // Logic for "Sever Connection"
+            val authPref = getSharedPreferences("Auth", Context.MODE_PRIVATE)
+            authPref.edit().clear().apply()
+            val intent = Intent(this, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+        }
+
         btnSave.setOnClickListener {
             val age = editAge.text.toString()
             val goal = editGoal.text.toString()
@@ -64,13 +88,12 @@ class ProfileActivity : AppCompatActivity() {
                 putString("user_age", age)
                 putString("user_goal", goal)
                 putString("user_medical", medical)
-                // Save image URI if one was picked
                 selectedImageUri?.let { putString("profile_uri", it.toString()) }
                 apply()
             }
 
-            Toast.makeText(this, "Profile Updated", Toast.LENGTH_SHORT).show()
-            finish() // Return to Dashboard
+            Toast.makeText(this, "Identity Synchronized", Toast.LENGTH_SHORT).show()
+            finish()
         }
     }
 }

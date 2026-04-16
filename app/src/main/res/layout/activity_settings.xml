@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000">
+
+    <TextView
+        android:id="@+id/tvSettingsTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Appearance"
+        android:textColor="#FFFFFF"
+        android:textSize="32sp"
+        android:fontFamily="sans-serif-black"
+        android:layout_margin="32dp"/>
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPagerThemes"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/tvSettingsTitle"
+        android:layout_above="@id/btnBackSettings"
+        android:clipToPadding="false"
+        android:clipChildren="false"/>
+
+    <Button
+        android:id="@+id/btnBackSettings"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="32dp"
+        android:text="Back"
+        android:textAllCaps="false"
+        android:backgroundTint="#1C1C1E"
+        android:textColor="#FFFFFF"
+        app:cornerRadius="16dp"/>
+
+</RelativeLayout>

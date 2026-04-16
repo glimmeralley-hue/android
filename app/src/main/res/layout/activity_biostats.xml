@@ -1,109 +1,192 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#000000"
-    android:orientation="vertical"
-    android:padding="32dp">
+    android:fillViewport="true">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Biostats"
-        android:textColor="#FFFFFF"
-        android:textSize="42sp"
-        android:fontFamily="sans-serif-black"
-        android:letterSpacing="-0.03"
-        android:layout_marginTop="40dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Precision tracking."
-        android:textColor="#8E8E93"
-        android:textSize="16sp"
-        android:fontFamily="sans-serif-light"
-        android:layout_marginBottom="48dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="BODY WEIGHT (KG)"
-        android:textColor="#8E8E93"
-        android:textSize="12sp"
-        android:fontFamily="sans-serif-medium"
-        android:letterSpacing="0.05" />
-
-    <EditText
-        android:id="@+id/editWeight"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:background="@android:color/transparent"
-        android:hint="68"
-        android:textColorHint="#48484A"
-        android:textColor="#FFFFFF"
-        android:inputType="numberDecimal"
-        android:textSize="28sp"
-        android:fontFamily="sans-serif-light"
-        android:layout_marginBottom="24dp" />
-    <TextView
-        android:id="@+id/tvBMIResult"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
-        android:text="BMI: --"
-        android:textColor="#FFFFFF"
-        android:textSize="24sp"
-        android:fontFamily="sans-serif-medium"
-        android:gravity="center" />
+        android:orientation="vertical"
+        android:padding="32dp">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:fontFamily="sans-serif-black"
+            android:letterSpacing="-0.03"
+            android:text="Biostats"
+            android:textColor="#FFFFFF"
+            android:textSize="42sp" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="HEIGHT (CM)"
-        android:textColor="#8E8E93"
-        android:textSize="12sp"
-        android:fontFamily="sans-serif-medium"
-        android:letterSpacing="0.05" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="32dp"
+            android:fontFamily="sans-serif-light"
+            android:text="Precision tracking &amp; AI Analysis."
+            android:textColor="#8E8E93"
+            android:textSize="16sp" />
 
-    <EditText
-        android:id="@+id/editHeight"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:background="@android:color/transparent"
-        android:hint="188"
-        android:textColorHint="#48484A"
-        android:textColor="#FFFFFF"
-        android:inputType="number"
-        android:textSize="28sp"
-        android:fontFamily="sans-serif-light"
-        android:layout_marginBottom="40dp" />
+        <!-- AI Briefing Card -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardAIBriefing"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            app:cardBackgroundColor="#1AFFFFFF"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="0dp">
 
-    <Button
-        android:id="@+id/btnSaveStats"
-        android:layout_width="match_parent"
-        android:layout_height="64dp"
-        android:text="Update Metrics"
-        android:backgroundTint="#FFFFFF"
-        android:textColor="#000000"
-        android:textAllCaps="false"
-        android:textSize="17sp"
-        android:fontFamily="sans-serif-medium"
-        app:cornerRadius="14dp"
-        android:layout_marginBottom="12dp" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
 
-    <Button
-        android:id="@+id/btnHomeBiostats"
-        android:layout_width="match_parent"
-        android:layout_height="64dp"
-        android:text="Back"
-        android:backgroundTint="#1C1C1E"
-        android:textColor="#FFFFFF"
-        android:textAllCaps="false"
-        android:textSize="17sp"
-        android:fontFamily="sans-serif-medium"
-        app:cornerRadius="14dp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:letterSpacing="0.1"
+                    android:text="AI HEALTH BRIEF"
+                    android:textColor="#8E8E93"
+                    android:textSize="11sp" />
 
-</LinearLayout>
+                <TextView
+                    android:id="@+id/tvAIBriefing"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-light"
+                    android:lineSpacingExtra="4dp"
+                    android:text="Update your metrics to receive a personalized AI health analysis."
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Progress Heatmap Placeholder -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:layout_marginBottom="32dp"
+            app:cardBackgroundColor="#1AFFFFFF"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="0dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:gravity="center">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="CONSISTENCY HEATMAP"
+                    android:textColor="#48484A"
+                    android:textSize="10sp"
+                    android:fontFamily="sans-serif-black"
+                    android:letterSpacing="0.2"
+                    android:layout_marginBottom="12dp"/>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <!-- Dynamic squares would go here -->
+                    <View android:layout_width="12dp" android:layout_height="12dp" android:background="#33FFFFFF" android:layout_margin="2dp"/>
+                    <View android:layout_width="12dp" android:layout_height="12dp" android:background="#FFFFFF" android:layout_margin="2dp"/>
+                    <View android:layout_width="12dp" android:layout_height="12dp" android:background="#33FFFFFF" android:layout_margin="2dp"/>
+                    <View android:layout_width="12dp" android:layout_height="12dp" android:background="#FFFFFF" android:layout_margin="2dp"/>
+                    <View android:layout_width="12dp" android:layout_height="12dp" android:background="#FFFFFF" android:layout_margin="2dp"/>
+                    <View android:layout_width="12dp" android:layout_height="12dp" android:background="#33FFFFFF" android:layout_margin="2dp"/>
+                    <View android:layout_width="12dp" android:layout_height="12dp" android:background="#FFFFFF" android:layout_margin="2dp"/>
+                </LinearLayout>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-medium"
+            android:letterSpacing="0.05"
+            android:text="BODY WEIGHT (KG)"
+            android:textColor="#8E8E93"
+            android:textSize="12sp" />
+
+        <EditText
+            android:id="@+id/editWeight"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:background="@android:color/transparent"
+            android:fontFamily="sans-serif-light"
+            android:hint="68"
+            android:inputType="numberDecimal"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#48484A"
+            android:textSize="28sp"
+            android:layout_marginBottom="24dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-medium"
+            android:letterSpacing="0.05"
+            android:text="HEIGHT (CM)"
+            android:textColor="#8E8E93"
+            android:textSize="12sp" />
+
+        <EditText
+            android:id="@+id/editHeight"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:background="@android:color/transparent"
+            android:fontFamily="sans-serif-light"
+            android:hint="188"
+            android:inputType="number"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#48484A"
+            android:textSize="28sp"
+            android:layout_marginBottom="24dp" />
+
+        <TextView
+            android:id="@+id/tvBMIResult"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="32dp"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            android:text="BMI: --"
+            android:textColor="#FFFFFF"
+            android:textSize="24sp" />
+
+        <Button
+            android:id="@+id/btnSaveStats"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:layout_marginBottom="12dp"
+            android:backgroundTint="#FFFFFF"
+            android:fontFamily="sans-serif-medium"
+            android:text="Update Metrics"
+            android:textAllCaps="false"
+            android:textColor="#000000"
+            android:textSize="17sp"
+            app:cornerRadius="14dp" />
+
+        <Button
+            android:id="@+id/btnHomeBiostats"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:backgroundTint="#1C1C1E"
+            android:fontFamily="sans-serif-medium"
+            android:text="Back"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            android:textSize="17sp"
+            app:cornerRadius="14dp" />
+
+    </LinearLayout>
+</ScrollView>

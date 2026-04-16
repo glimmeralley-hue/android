@@ -7,10 +7,18 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.ai.client.generativeai.GenerativeModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class BiostatsActivity : AppCompatActivity() {
+    
+    private val apiKey = "AIzaSyDV2Fu1LHO7JaAMSPx-CdYzUpTwpzAqNjU"
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_biostats)
@@ -18,6 +26,7 @@ class BiostatsActivity : AppCompatActivity() {
         val weightInput = findViewById<EditText>(R.id.editWeight)
         val heightInput = findViewById<EditText>(R.id.editHeight)
         val tvBMIResult = findViewById<TextView>(R.id.tvBMIResult)
+        val tvAIBriefing = findViewById<TextView>(R.id.tvAIBriefing)
         val saveBtn = findViewById<Button>(R.id.btnSaveStats)
         val backBtn = findViewById<Button>(R.id.btnHomeBiostats)
 
@@ -25,9 +34,20 @@ class BiostatsActivity : AppCompatActivity() {
         val auth = FirebaseAuth.getInstance()
         val database = FirebaseDatabase.getInstance().getReference("Biostats")
 
-        // Load existing data from SharedPreferences
-        weightInput.setText(sharedPref.getString("saved_weight", ""))
-        heightInput.setText(sharedPref.getString("saved_height", ""))
+        val generativeModel = GenerativeModel(
+            modelName = "gemini-1.5-flash-latest",
+            apiKey = apiKey
+        )
+
+        // Load existing data
+        val savedWeight = sharedPref.getString("saved_weight", "")
+        val savedHeight = sharedPref.getString("saved_height", "")
+        weightInput.setText(savedWeight)
+        heightInput.setText(savedHeight)
+        
+        if (savedWeight != null && savedHeight != null && savedWeight.isNotEmpty() && savedHeight.isNotEmpty()) {
+            generateAIBrief(savedWeight, savedHeight, tvAIBriefing, generativeModel)
+        }
 
         saveBtn.setOnClickListener {
             val weight = weightInput.text.toString()
@@ -39,14 +59,17 @@ class BiostatsActivity : AppCompatActivity() {
                 val bmi = w / (h * h)
                 tvBMIResult.text = String.format("BMI: %.1f", bmi)
 
-                // 1. Save to SharedPreferences (Local Cache)
+                // Save Locally
                 with(sharedPref.edit()) {
                     putString("saved_weight", weight)
                     putString("saved_height", height)
                     apply()
                 }
 
-                // 2. Save to Firebase Database (Cloud Table)
+                // AI Analysis
+                generateAIBrief(weight, height, tvAIBriefing, generativeModel)
+
+                // Save to Firebase
                 val uid = auth.currentUser?.uid
                 if (uid != null) {
                     val stats = Biostats(
@@ -55,19 +78,30 @@ class BiostatsActivity : AppCompatActivity() {
                         bmi = bmi,
                         timestamp = System.currentTimeMillis()
                     )
-                    database.child(uid).setValue(stats).addOnSuccessListener {
-                        Toast.makeText(this, "Cloud Sync Successful", Toast.LENGTH_SHORT).show()
-                    }.addOnFailureListener {
-                        Toast.makeText(this, "Cloud Sync Failed: ${it.message}", Toast.LENGTH_SHORT).show()
-                    }
+                    database.child(uid).setValue(stats)
                 }
-
-                Toast.makeText(this, "Metrics Saved", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Metrics Updated", Toast.LENGTH_SHORT).show()
             }
         }
 
         backBtn.setOnClickListener { finish() }
+    }
+
+    private fun generateAIBrief(weight: String, height: String, tvBrief: TextView, model: GenerativeModel) {
+        tvBrief.text = "AI is analyzing your metrics..."
+        
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val prompt = "Based on a weight of $weight kg and height of $height cm, provide a very brief, professional wellness insight. Include BMI category and one actionable health tip. Keep it under 3 sentences."
+                val response = model.generateContent(prompt)
+                withContext(Dispatchers.Main) {
+                    tvBrief.text = response.text ?: "Analysis unavailable."
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    tvBrief.text = "AI Analysis paused: ${e.message}"
+                }
+            }
+        }
     }
 }

@@ -1,103 +1,118 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000000"
-    android:fillViewport="true">
+    android:background="#000000">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/inputContainerRoutine"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="32dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:fontFamily="sans-serif-black"
+                android:letterSpacing="-0.03"
+                android:text="Routine AI"
+                android:textColor="#FFFFFF"
+                android:textSize="42sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="32dp"
+                android:fontFamily="sans-serif-light"
+                android:text="Your evolving fitness architect."
+                android:textColor="#8E8E93"
+                android:textSize="16sp" />
+
+            <!-- AI Routine Area -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvChatRoutine"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false" />
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Snowflake Loading (Centered overlay) -->
+    <FrameLayout
+        android:id="@+id/loadingOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#99000000"
+        android:visibility="gone"
+        android:clickable="true"
+        android:focusable="true">
+
+        <ProgressBar
+            android:id="@+id/snowflakeLoader"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center"
+            android:indeterminate="true"
+            android:indeterminateDrawable="@android:drawable/ic_menu_rotate"
+            app:tint="#FFFFFF"/>
+    </FrameLayout>
 
     <LinearLayout
+        android:id="@+id/inputContainerRoutine"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="32dp">
+        android:layout_alignParentBottom="true"
+        android:padding="16dp"
+        android:background="#11FFFFFF"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
 
-        <TextView
-            android:layout_width="wrap_content"
+        <androidx.cardview.widget.CardView
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
-            android:fontFamily="sans-serif-black"
-            android:letterSpacing="-0.03"
-            android:text="Routine"
-            android:textColor="#FFFFFF"
-            android:textSize="42sp" />
+            android:layout_weight="1"
+            app:cardBackgroundColor="#1AFFFFFF"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="0dp">
 
-        <TextView
-            android:id="@+id/tvRoutineSubtitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="32dp"
-            android:fontFamily="sans-serif-light"
-            android:text="Target: Mass Hypertrophy"
-            android:textColor="#8E8E93"
-            android:textSize="16sp" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#1C1C1E"
-            android:orientation="vertical"
-            android:padding="24dp"
-            android:layout_marginBottom="16dp">
-
-            <TextView
-                android:layout_width="wrap_content"
+            <EditText
+                android:id="@+id/etMessageInputRoutine"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="PUSH DAY"
+                android:hint="Update your goals or ask for a routine..."
+                android:textColorHint="#8E8E93"
                 android:textColor="#FFFFFF"
-                android:textSize="18sp"
-                android:fontFamily="sans-serif-bold" />
+                android:background="@android:color/transparent"
+                android:paddingHorizontal="20dp"
+                android:paddingVertical="12dp"
+                android:maxLines="4"
+                android:fontFamily="sans-serif-light"/>
+        </androidx.cardview.widget.CardView>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="Bench Press: 4x8\nOverhead Press: 3x10\nTricep Dips: 3x12"
-                android:textColor="#8E8E93"
-                android:textSize="14sp"
-                android:lineSpacingExtra="4dp"/>
-        </LinearLayout>
+        <androidx.cardview.widget.CardView
+            android:id="@+id/btnSendRoutine"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="12dp"
+            app:cardBackgroundColor="#FFFFFF"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="0dp">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#1C1C1E"
-            android:orientation="vertical"
-            android:padding="24dp"
-            android:layout_marginBottom="32dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="PULL DAY"
-                android:textColor="#FFFFFF"
-                android:textSize="18sp"
-                android:fontFamily="sans-serif-bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="Deadlifts: 3x5\nPull Ups: 4xMax\nBarbell Rows: 3x10"
-                android:textColor="#8E8E93"
-                android:textSize="14sp"
-                android:lineSpacingExtra="4dp"/>
-        </LinearLayout>
-
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
-
-        <Button
-            android:id="@+id/btnBackRoutine"
-            android:layout_width="match_parent"
-            android:layout_height="64dp"
-            android:backgroundTint="#FFFFFF"
-            android:text="Back"
-            android:textAllCaps="false"
-            android:textColor="#000000"
-            app:cornerRadius="14dp" />
-
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@android:drawable/ic_menu_send"
+                android:padding="12dp"
+                app:tint="#000000"/>
+        </androidx.cardview.widget.CardView>
     </LinearLayout>
-</ScrollView>
+
+</RelativeLayout>

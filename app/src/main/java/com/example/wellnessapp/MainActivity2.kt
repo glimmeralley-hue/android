@@ -1,128 +1,84 @@
 package com.example.wellnessapp
 
-import android.content.Context
-import android.graphics.Color
 import android.os.Bundle
-import android.widget.Button
 import android.widget.EditText
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.example.wellnessapp.R.id.tvIngredientsList
-import retrofit2.*
-import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.GET
-import retrofit2.http.Header
-import retrofit2.http.Query
-
-// 1. DATA MODELS
-data class NinjaResponse(val items: List<NinjaFood>)
-data class NinjaFood(
-    val name: String,
-    val calories: Double,
-    val protein_g: Double,
-    val sugar_g: Double
-)
-
-// 2. API INTERFACE (Hardened)
-interface CalorieNinjaService {
-    @GET("v1/nutrition")
-    fun getNutrition(
-        @Header("X-Api-Key") apiKey: String, // Ensure this matches exactly
-        @Query("query") query: String
-    ): Call<NinjaResponse>
-}
+import androidx.cardview.widget.CardView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.ai.client.generativeai.GenerativeModel
+import com.google.ai.client.generativeai.type.BlockThreshold
+import com.google.ai.client.generativeai.type.HarmCategory
+import com.google.ai.client.generativeai.type.SafetySetting
+import com.google.ai.client.generativeai.type.generationConfig
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity2 : AppCompatActivity() {
 
-    // Ensure NO spaces before or after the key
-    private val NINJA_KEY = "HOH3uJGdnxpeJm9fGWU6sftzBoKVcYOT7B4QxvFZ"
+    private lateinit var chatAdapter: ChatAdapter
+    private val messages = mutableListOf<ChatMessage>()
+    private val apiKey = "AIzaSyDV2Fu1LHO7JaAMSPx-CdYzUpTwpzAqNjU"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_nutrition)
 
-        // UI Initialization
-        val etFoodInput = findViewById<EditText>(R.id.etFoodInput)
-        val btnAnalyze = findViewById<Button>(R.id.btnAnalyze)
-        val tvLiveAnalysis = findViewById<TextView>(R.id.tvLiveAnalysis)
-        val tvMedicalWarning = findViewById<TextView>(R.id.tvMedicalWarning)
+        val rvChat = findViewById<RecyclerView>(R.id.rvChat)
+        val etInput = findViewById<EditText>(R.id.etMessageInput)
+        val btnSend = findViewById<CardView>(R.id.btnSend)
 
-        // Recipe Component Views
-        val tvRecipeTitle = findViewById<TextView>(R.id.tvRecipeTitle)
-        val tvIngredientsList = findViewById<TextView>(tvIngredientsList)
-        val tvInstructions = findViewById<TextView>(R.id.tvInstructions)
+        chatAdapter = ChatAdapter(messages)
+        rvChat.layoutManager = LinearLayoutManager(this)
+        rvChat.adapter = chatAdapter
 
-        // Setup Retrofit
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://api.calorieninjas.com/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
+        val config = generationConfig {
+            temperature = 0.7f
+        }
 
-        val service = retrofit.create(CalorieNinjaService::class.java)
+        val safetySettings = listOf(
+            SafetySetting(HarmCategory.HARASSMENT, BlockThreshold.NONE),
+            SafetySetting(HarmCategory.HATE_SPEECH, BlockThreshold.NONE),
+            SafetySetting(HarmCategory.SEXUALLY_EXPLICIT, BlockThreshold.NONE),
+            SafetySetting(HarmCategory.DANGEROUS_CONTENT, BlockThreshold.NONE)
+        )
 
-        btnAnalyze.setOnClickListener {
-            val userQuery = etFoodInput.text.toString().trim()
+        val generativeModel = GenerativeModel(
+            modelName = "gemini-2.0-flash",
+            apiKey = apiKey,
+            generationConfig = config,
+            safetySettings = safetySettings
+        )
 
-            if (userQuery.isNotEmpty()) {
-                tvLiveAnalysis.text = "UPLINK: REQUESTING DATA..."
+        addMessage("Hello! I'm your Nutrition AI. Ask me anything about food, calories, or diet plans.", false)
 
-                service.getNutrition(NINJA_KEY, userQuery).enqueue(object : Callback<NinjaResponse> {
-                    override fun onResponse(call: Call<NinjaResponse>, response: Response<NinjaResponse>) {
-                        if (response.isSuccessful) {
-                            val foods = response.body()?.items
-                            if (!foods.isNullOrEmpty()) {
-                                val totalKcal = foods.sumOf { it.calories }.toInt()
-                                val totalSugar = foods.sumOf { it.sugar_g }
+        btnSend.setOnClickListener {
+            val userText = etInput.text.toString().trim()
+            if (userText.isNotEmpty()) {
+                etInput.text.clear()
+                addMessage(userText, true)
 
-                                // Update Analysis Card
-                                tvLiveAnalysis.text = "RESULT: $totalKcal KCAL"
-
-                                // Integrated Recipe Component logic
-                                updateRecipeComponent(userQuery, tvRecipeTitle, tvIngredientsList, tvInstructions)
-
-                                // Medical Career Path logic (Sugar warning)
-                                if (totalSugar > 25.0) {
-                                    tvMedicalWarning.text = "ADVISORY: HIGH GLUCOSE IMPACT"
-                                    tvMedicalWarning.setTextColor(Color.parseColor("#FF453A"))
-                                } else {
-                                    tvMedicalWarning.text = "CLINICAL INTEGRITY: OPTIMAL"
-                                    tvMedicalWarning.setTextColor(Color.parseColor("#30D158"))
-                                }
-                            } else {
-                                tvLiveAnalysis.text = "ERROR: DATA NOT FOUND"
-                            }
-                        } else {
-                            // If this still says 400, your API Key has likely expired or is blocked
-                            tvLiveAnalysis.text = "ERROR ${response.code()}: VERIFICATION FAILED"
+                CoroutineScope(Dispatchers.IO).launch {
+                    try {
+                        val response = generativeModel.generateContent("You are a professional nutritionist. Answer this: $userText")
+                        withContext(Dispatchers.Main) {
+                            response.text?.let { addMessage(it, false) }
+                        }
+                    } catch (e: Exception) {
+                        withContext(Dispatchers.Main) {
+                            addMessage("Error: ${e.message}", false)
                         }
                     }
-
-                    override fun onFailure(call: Call<NinjaResponse>, t: Throwable) {
-                        tvLiveAnalysis.text = "LINK FAILURE: NETWORK OFFLINE"
-                    }
-                })
+                }
             }
         }
     }
 
-    // Logic to update the Recipe Component based on the input
-    private fun updateRecipeComponent(query: String, title: TextView, ingredients: TextView, instructions: TextView) {
-        when {
-            query.contains("beef", true) || query.contains("nyama", true) -> {
-                title.text = "STARK PROTEIN: LEAN BEEF"
-                ingredients.text = "INGREDIENTS //\n• 200g Lean Beef\n• 1 tsp Black Pepper\n• Minimal Sea Salt"
-                instructions.text = "1. Sear on high heat for 3 mins per side.\n2. Rest for 5 mins to retain nutrients.\n\nMedical: Optimal B12 and Zinc for active recovery."
-            }
-            query.contains("rice", true) -> {
-                title.text = "CARB LOAD: BROWN RICE"
-                ingredients.text = "INGREDIENTS //\n• 1 Cup Brown Rice\n• 2 Cups Water"
-                instructions.text = "1. Rinse thoroughly to remove excess arsenic.\n2. Simmer for 40 mins.\n\nMedical: Low Glycemic Index for sustained energy."
-            }
-            else -> {
-                title.text = "GENERIC MEAL DATA"
-                ingredients.text = "INGREDIENTS //\nStandard components detected."
-                instructions.text = "Consult clinical guidelines for specific preparation methods."
-            }
-        }
+    private fun addMessage(text: String, isUser: Boolean) {
+        messages.add(ChatMessage(text, isUser))
+        chatAdapter.notifyItemInserted(messages.size - 1)
+        findViewById<RecyclerView>(R.id.rvChat).scrollToPosition(messages.size - 1)
     }
 }

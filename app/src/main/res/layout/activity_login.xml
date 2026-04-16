@@ -6,85 +6,113 @@
     android:background="#000000"
     android:fillViewport="true">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="32dp">
+        android:orientation="vertical"
+        android:padding="32dp"
+        android:gravity="center_horizontal">
 
         <TextView
             android:id="@+id/tvLoginHeader"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="sans-serif-black"
-            android:text="ACCESS\nACCOUNT"
-            android:textColor="#FFFFFF"
-            android:textSize="32sp"
-            android:letterSpacing="0.05" />
-
-        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/tvLoginHeader"
-            android:layout_marginTop="40dp"
-            android:orientation="vertical">
+            android:layout_marginTop="64dp"
+            android:fontFamily="sans-serif-black"
+            android:text="ACCESS\nPROTOCOL"
+            android:textColor="#FFFFFF"
+            android:textSize="42sp"
+            android:letterSpacing="-0.03"
+            android:lineSpacingMultiplier="0.9"/>
 
-            <EditText
-                android:id="@+id/etEmail"
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Authenticate to synchronize with Aura."
+            android:textColor="#8E8E93"
+            android:textSize="16sp"
+            android:fontFamily="sans-serif-light"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="48dp"/>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardBackgroundColor="#1AFFFFFF"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="0dp"
+            android:layout_marginBottom="24dp">
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:backgroundTint="#1C1C1E"
-                android:hint="EMAIL ADDRESS"
-                android:inputType="textEmailAddress"
-                android:padding="16dp"
-                android:textColor="#FFFFFF"
-                android:textColorHint="#48484A"
-                android:textSize="14sp" />
+                android:orientation="vertical"
+                android:padding="16dp">
 
-            <EditText
-                android:id="@+id/etPassword"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:backgroundTint="#1C1C1E"
-                android:hint="PASSWORD"
-                android:inputType="textPassword"
-                android:padding="16dp"
-                android:textColor="#FFFFFF"
-                android:textColorHint="#48484A"
-                android:textSize="14sp" />
+                <EditText
+                    android:id="@+id/etEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:hint="Email Address"
+                    android:inputType="textEmailAddress"
+                    android:padding="16dp"
+                    android:textColor="#FFFFFF"
+                    android:textColorHint="#48484A"
+                    android:fontFamily="sans-serif-light"/>
 
-            <Button
-                android:id="@+id/btnLogin"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_marginTop="40dp"
-                android:backgroundTint="#FFFFFF"
-                android:text="SIGN IN"
-                android:textColor="#000000"
-                android:textStyle="bold"
-                app:cornerRadius="8dp" />
+                <View android:layout_width="match_parent" android:layout_height="0.5dp" android:background="#22FFFFFF" android:layout_marginHorizontal="8dp"/>
 
-            <TextView
-                android:id="@+id/tvSignupRedirect"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:gravity="center"
-                android:text="NEED AN ACCOUNT? SIGN UP"
-                android:textColor="#8E8E93"
-                android:textSize="12sp"
-                android:letterSpacing="0.1" />
+                <EditText
+                    android:id="@+id/etPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:hint="Security Password"
+                    android:inputType="textPassword"
+                    android:padding="16dp"
+                    android:textColor="#FFFFFF"
+                    android:textColorHint="#48484A"
+                    android:fontFamily="sans-serif-light"/>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
 
-        </LinearLayout>
+        <Button
+            android:id="@+id/btnLogin"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:backgroundTint="#FFFFFF"
+            android:text="Authenticate"
+            android:textColor="#000000"
+            android:fontFamily="sans-serif-medium"
+            android:textSize="17sp"
+            android:textAllCaps="false"
+            app:cornerRadius="32dp" />
+
+        <TextView
+            android:id="@+id/tvSignupRedirect"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="Create New Evolution"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:fontFamily="sans-serif-medium"
+            android:letterSpacing="0.05"/>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
             android:text="GLIMMER SECURITY PROTOCOL v1.0"
             android:textColor="#1C1C1E"
-            android:textSize="10sp" />
+            android:textSize="10sp"
+            android:letterSpacing="0.2"
+            android:layout_marginBottom="16dp"/>
 
-    </RelativeLayout>
+    </LinearLayout>
 </ScrollView>
