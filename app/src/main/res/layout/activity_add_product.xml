@@ -1,85 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
-    tools:context=".AddProductActivity">
+    android:orientation="vertical"
+    android:padding="20dp"
+    android:background="#000000">
 
-    <LinearLayout
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="20dp">
+        android:text="Glimmer Inventory"
+        android:textColor="#39FF14"
+        android:textSize="26sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="30dp"
+        android:textAlignment="center"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Add New Product"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:layout_gravity="center"
-            android:layout_marginBottom="20dp" />
+    <EditText
+        android:id="@+id/etProductName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Product Name"
+        android:textColorHint="#777777"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#39FF14"
+        android:padding="15dp"
+        android:layout_marginBottom="15dp"/>
 
-        <ImageView
-            android:id="@+id/ivProductPhoto"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            android:layout_gravity="center"
-            android:scaleType="centerCrop"
-            android:src="@android:drawable/ic_menu_gallery"
-            android:background="#EEEEEE" />
+    <EditText
+        android:id="@+id/etProductPrice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Price (Kes)"
+        android:textColorHint="#777777"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#39FF14"
+        android:inputType="numberDecimal"
+        android:padding="15dp"
+        android:layout_marginBottom="30dp"/>
 
-        <Button
-            android:id="@+id/btnSelectPhoto"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="8dp"
-            android:text="Select Photo" />
+    <Button
+        android:id="@+id/btnSaveProduct"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="SAVE TO FIREBASE"
+        android:textColor="#000000"
+        android:textStyle="bold"
+        android:backgroundTint="#39FF14"
+        app:cornerRadius="12dp" />
 
-        <EditText
-            android:id="@+id/etProductName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:hint="Product Name"
-            android:inputType="textPersonName" />
-
-        <EditText
-            android:id="@+id/etProductPrice"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:hint="Price (Kes)"
-            android:inputType="number" />
-
-        <EditText
-            android:id="@+id/etProductDesc"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:hint="Description"
-            android:gravity="top"
-            android:inputType="textMultiLine"
-            android:lines="3" />
-
-        <ProgressBar
-            android:id="@+id/progressBar"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:indeterminate="true"
-            android:visibility="gone" />
-
-        <Button
-            android:id="@+id/btnSaveProduct"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="Add to Wellness Store" />
-
-    </LinearLayout>
-</ScrollView>
+</LinearLayout>

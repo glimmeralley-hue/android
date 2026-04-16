@@ -3,10 +3,15 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
 }
-
 android {
     namespace = "com.example.wellnessapp"
     compileSdk = 36
+
+    viewBinding {
+
+        enable = true
+    }
+
 
     defaultConfig {
         applicationId = "com.example.wellnessapp"

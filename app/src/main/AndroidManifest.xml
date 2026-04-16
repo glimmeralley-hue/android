@@ -21,6 +21,9 @@
         android:label="WellnessApp"
         android:theme="@style/Theme.WellnessApp">
         <activity
+            android:name=".PRODUCTS"
+            android:exported="false" />
+        <activity
             android:name=".payment"
             android:exported="false" />
         <activity
