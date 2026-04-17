@@ -25,6 +25,24 @@
         android:padding="16dp"
         android:clipToPadding="false"/>
 
+    <!-- Loading Overlay -->
+    <FrameLayout
+        android:id="@+id/loadingOverlayRecipes"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#99000000"
+        android:visibility="gone"
+        android:clickable="true"
+        android:focusable="true">
+
+        <ProgressBar
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center"
+            android:indeterminate="true"
+            app:tint="#FFFFFF"/>
+    </FrameLayout>
+
     <LinearLayout
         android:id="@+id/inputContainerRecipes"
         android:layout_width="match_parent"

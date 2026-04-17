@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
+    id("com.google.devtools.ksp") version "2.1.0-1.0.29"
 }
 android {
     namespace = "com.example.wellnessapp"
@@ -38,6 +39,7 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 }
 
@@ -50,14 +52,33 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    // Firebase - using explicit versions to ensure resolution
+    implementation(platform("com.google.firebase:firebase-bom:34.12.0"))
+    implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-database")
+    
+    // Core Engine: Gemma 4 E4B via LiteRT-LM (2026) framework
+    implementation("com.google.mediapipe:tasks-genai:0.10.33")
+    implementation("com.google.mediapipe:tasks-vision:0.10.33") // For OCR & Afro Journey tracking
+    implementation("com.google.mediapipe:tasks-text:0.10.33")   // For Vector Search / ScaNN
+
+    // Database: Room 3.0 (KMP version) for Zero-Latency Local Persistence
+    val room_version = "2.7.0-alpha11" // Room 3.0 equivalent in KMP transition
+    implementation("androidx.room:room-runtime:$room_version")
+    implementation("androidx.room:room-ktx:$room_version")
+    implementation("androidx.room:room-paging:$room_version")
+    ksp("androidx.room:room-compiler:$room_version")
+
+    // Multimodal & Logic
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+    implementation("androidx.paging:paging-runtime-ktx:3.3.2")
+    
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.logging)
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
-    implementation(platform("com.google.firebase:firebase-bom:33.9.0"))
-    implementation("com.google.firebase:firebase-auth-ktx")
-    implementation("com.google.firebase:firebase-database-ktx")
-    implementation("com.google.firebase:firebase-storage-ktx")
-    implementation("io.coil-kt:coil:2.4.0")
-    implementation("com.google.android.material:material:1.9.0")
-    implementation("androidx.cardview:cardview:1.0.0")
-    implementation(libs.google.generativeai)
+
+    // Coil for Image Loading
+    implementation("io.coil-kt:coil:2.7.0")
 }

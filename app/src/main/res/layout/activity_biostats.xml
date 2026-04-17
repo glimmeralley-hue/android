@@ -31,7 +31,7 @@
             android:textColor="#8E8E93"
             android:textSize="16sp" />
 
-        <!-- AI Briefing Card -->
+        <!-- AI Briefing Card with Voice Animation -->
         <androidx.cardview.widget.CardView
             android:id="@+id/cardAIBriefing"
             android:layout_width="match_parent"
@@ -47,15 +47,31 @@
                 android:orientation="vertical"
                 android:padding="20dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:fontFamily="sans-serif-medium"
-                    android:letterSpacing="0.1"
-                    android:text="AI HEALTH BRIEF"
-                    android:textColor="#8E8E93"
-                    android:textSize="11sp" />
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="8dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-medium"
+                        android:letterSpacing="0.1"
+                        android:text="AURA REASONING"
+                        android:textColor="#8E8E93"
+                        android:textSize="11sp" />
+
+                    <!-- AURA Voice Pulse Animation View -->
+                    <View
+                        android:id="@+id/auraPulse"
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:background="@android:drawable/presence_online"
+                        android:visibility="invisible" />
+                </LinearLayout>
 
                 <TextView
                     android:id="@+id/tvAIBriefing"
@@ -63,7 +79,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-light"
                     android:lineSpacingExtra="4dp"
-                    android:text="Update your metrics to receive a personalized AI health analysis."
+                    android:text="Awaiting Core Initialization..."
                     android:textColor="#FFFFFF"
                     android:textSize="14sp" />
             </LinearLayout>
@@ -96,7 +112,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
-                    <!-- Dynamic squares would go here -->
                     <View android:layout_width="12dp" android:layout_height="12dp" android:background="#33FFFFFF" android:layout_margin="2dp"/>
                     <View android:layout_width="12dp" android:layout_height="12dp" android:background="#FFFFFF" android:layout_margin="2dp"/>
                     <View android:layout_width="12dp" android:layout_height="12dp" android:background="#33FFFFFF" android:layout_margin="2dp"/>

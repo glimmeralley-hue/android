@@ -17,15 +17,34 @@
             android:orientation="vertical"
             android:padding="32dp">
 
-            <TextView
-                android:layout_width="wrap_content"
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="40dp"
-                android:fontFamily="sans-serif-black"
-                android:letterSpacing="-0.03"
-                android:text="Routine AI"
-                android:textColor="#FFFFFF"
-                android:textSize="42sp" />
+                android:layout_marginTop="40dp">
+
+                <TextView
+                    android:id="@+id/tvTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-black"
+                    android:letterSpacing="-0.03"
+                    android:text="Routine AI"
+                    android:textColor="#FFFFFF"
+                    android:textSize="42sp" />
+
+                <View
+                    android:id="@+id/auraPulseRoutine"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_toEndOf="@id/tvTitle"
+                    android:layout_alignTop="@id/tvTitle"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginStart="8dp"
+                    android:background="@android:drawable/presence_online"
+                    android:backgroundTint="#00FF00"
+                    android:visibility="gone" />
+
+            </RelativeLayout>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -74,6 +93,23 @@
         android:background="#11FFFFFF"
         android:orientation="horizontal"
         android:gravity="center_vertical">
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/btnMicRoutine"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="8dp"
+            app:cardBackgroundColor="#1AFFFFFF"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="0dp">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@android:drawable/ic_btn_speak_now"
+                android:padding="12dp"
+                app:tint="#FFFFFF"/>
+        </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
             android:layout_width="0dp"

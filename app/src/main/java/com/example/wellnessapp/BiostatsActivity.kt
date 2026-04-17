@@ -2,27 +2,33 @@ package com.example.wellnessapp
 
 import android.content.Context
 import android.os.Bundle
+import android.view.View
+import android.view.animation.AlphaAnimation
+import android.view.animation.Animation
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.google.ai.client.generativeai.GenerativeModel
+import androidx.lifecycle.lifecycleScope
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
+/**
+ * BiostatsActivity: REDMI Note 12 Pro Optimized.
+ * Features: Instruction-Format Unlocking & AURA Voice Pulse Animation.
+ */
 class BiostatsActivity : AppCompatActivity() {
     
-    private val apiKey = "AIzaSyDV2Fu1LHO7JaAMSPx-CdYzUpTwpzAqNjU"
+    private lateinit var auraPulse: View
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_biostats)
 
+        auraPulse = findViewById(R.id.auraPulse)
         val weightInput = findViewById<EditText>(R.id.editWeight)
         val heightInput = findViewById<EditText>(R.id.editHeight)
         val tvBMIResult = findViewById<TextView>(R.id.tvBMIResult)
@@ -34,19 +40,21 @@ class BiostatsActivity : AppCompatActivity() {
         val auth = FirebaseAuth.getInstance()
         val database = FirebaseDatabase.getInstance().getReference("Biostats")
 
-        val generativeModel = GenerativeModel(
-            modelName = "gemini-2.0-flash",
-            apiKey = apiKey
-        )
-
-        // Load existing data
         val savedWeight = sharedPref.getString("saved_weight", "")
         val savedHeight = sharedPref.getString("saved_height", "")
         weightInput.setText(savedWeight)
         heightInput.setText(savedHeight)
         
-        if (savedWeight != null && savedHeight != null && savedWeight.isNotEmpty() && savedHeight.isNotEmpty()) {
-            generateAIBrief(savedWeight, savedHeight, tvAIBriefing, generativeModel)
+        lifecycleScope.launch {
+            GlimmerEngine.loadingStatus.collectLatest { status ->
+                if (status == GlimmerEngine.Status.READY) {
+                    if (!savedWeight.isNullOrEmpty() && !savedHeight.isNullOrEmpty()) {
+                        generateAIBrief(savedWeight, savedHeight, tvAIBriefing)
+                    }
+                } else if (status == GlimmerEngine.Status.LOADING) {
+                    tvAIBriefing.text = "AURA Core: Waking up in background..."
+                }
+            }
         }
 
         saveBtn.setOnClickListener {
@@ -59,17 +67,14 @@ class BiostatsActivity : AppCompatActivity() {
                 val bmi = w / (h * h)
                 tvBMIResult.text = String.format("BMI: %.1f", bmi)
 
-                // Save Locally
                 with(sharedPref.edit()) {
                     putString("saved_weight", weight)
                     putString("saved_height", height)
                     apply()
                 }
 
-                // AI Analysis
-                generateAIBrief(weight, height, tvAIBriefing, generativeModel)
+                generateAIBrief(weight, height, tvAIBriefing)
 
-                // Save to Firebase
                 val uid = auth.currentUser?.uid
                 if (uid != null) {
                     val stats = Biostats(
@@ -80,28 +85,37 @@ class BiostatsActivity : AppCompatActivity() {
                     )
                     database.child(uid).setValue(stats)
                 }
-                Toast.makeText(this, "Metrics Updated", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "AURA: Metrics Logged", Toast.LENGTH_SHORT).show()
             }
         }
 
         backBtn.setOnClickListener { finish() }
     }
 
-    private fun generateAIBrief(weight: String, height: String, tvBrief: TextView, model: GenerativeModel) {
-        tvBrief.text = "AI is analyzing your metrics..."
+    private fun generateAIBrief(weight: String, height: String, tvBrief: TextView) {
+        tvBrief.text = "AURA is analyzing biometric data..."
+        startAuraPulse() // Start breathing animation
         
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val prompt = "Based on a weight of $weight kg and height of $height cm, provide a very brief, professional wellness insight. Include BMI category and one actionable health tip. Keep it under 3 sentences."
-                val response = model.generateContent(prompt)
-                withContext(Dispatchers.Main) {
-                    tvBrief.text = response.text ?: "Analysis unavailable."
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    tvBrief.text = "AI Analysis paused: ${e.message}"
-                }
-            }
+        lifecycleScope.launch {
+            val prompt = "User: Dyllan. Stats: Weight $weight kg, Height $height cm. Task: Health insight for a medical student."
+            val result = GlimmerEngine.generate(this@BiostatsActivity, prompt)
+            
+            stopAuraPulse() // Stop animation once text appears
+            tvBrief.text = result ?: "AURA: Core waking up. Wait 5s and retry."
         }
+    }
+
+    private fun startAuraPulse() {
+        auraPulse.visibility = View.VISIBLE
+        val anim = AlphaAnimation(0.2f, 1.0f)
+        anim.duration = 800
+        anim.repeatMode = Animation.REVERSE
+        anim.repeatCount = Animation.INFINITE
+        auraPulse.startAnimation(anim)
+    }
+
+    private fun stopAuraPulse() {
+        auraPulse.clearAnimation()
+        auraPulse.visibility = View.INVISIBLE
     }
 }

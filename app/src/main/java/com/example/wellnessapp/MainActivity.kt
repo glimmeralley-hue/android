@@ -8,22 +8,23 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
-import com.google.ai.client.generativeai.GenerativeModel
-import com.google.ai.client.generativeai.type.BlockThreshold
-import com.google.ai.client.generativeai.type.HarmCategory
-import com.google.ai.client.generativeai.type.SafetySetting
-import com.google.ai.client.generativeai.type.generationConfig
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+/**
+ * Glimmer Home: The entry point for Dyllan's Medical Evolution.
+ * Optimized to prevent Main Thread blocking during AI reasoning.
+ */
 class MainActivity : AppCompatActivity() {
 
-    private val apiKey = "AIzaSyDV2Fu1LHO7JaAMSPx-CdYzUpTwpzAqNjU"
     private lateinit var auraNotifications: AuraNotificationManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,7 +34,25 @@ class MainActivity : AppCompatActivity() {
         applyTheme()
 
         auraNotifications = AuraNotificationManager(this)
+        
+        setupUI()
+        observeAuraStatus()
 
+        // 8GB RAM OPTIMIZATION: Wait 1 second before starting the heavy 3.6GB map
+        // to let the UI finish its first frame and prevent launch-lag.
+        lifecycleScope.launch {
+            delay(1000)
+            GlimmerEngine.warmup(this@MainActivity)
+            loadWeeklyInsight()
+        }
+        
+        val sharedPref = getSharedPreferences("UserStats", MODE_PRIVATE)
+        if (sharedPref.getString("saved_weight", "").isNullOrEmpty()) {
+            auraNotifications.scheduleMetricReminder()
+        }
+    }
+
+    private fun setupUI() {
         findViewById<CardView>(R.id.profileCircle).setOnClickListener {
             startActivity(Intent(this, ProfileActivity::class.java))
         }
@@ -83,27 +102,43 @@ class MainActivity : AppCompatActivity() {
                 else -> false
             }
         }
+    }
 
-        loadWeeklyInsight()
+    private fun observeAuraStatus() {
+        val tvSummary = findViewById<TextView>(R.id.tvWeeklySummary)
         
-        val sharedPref = getSharedPreferences("UserStats", MODE_PRIVATE)
-        if (sharedPref.getString("saved_weight", "").isNullOrEmpty()) {
-            auraNotifications.scheduleMetricReminder()
+        lifecycleScope.launch {
+            GlimmerEngine.loadingStatus.collectLatest { status ->
+                when (status) {
+                    GlimmerEngine.Status.LOADING -> {
+                        tvSummary.text = "AURA Core: Waking up in background..."
+                    }
+                    GlimmerEngine.Status.READY -> {
+                        tvSummary.text = "AURA Core: Online. All systems fluid."
+                        loadWeeklyInsight()
+                    }
+                    GlimmerEngine.Status.ERROR_MISSING_MODEL -> {
+                        tvSummary.text = "AURA Error: gemma.litertlm missing."
+                    }
+                    GlimmerEngine.Status.ERROR_INIT_FAILED -> {
+                        tvSummary.text = "AURA Error: Initialization Failed."
+                    }
+                    else -> {}
+                }
+            }
         }
     }
 
     private fun applyTheme() {
         val settingsPref = getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
-        val bgColor = settingsPref.getInt("theme_bg", Color.BLACK)
-        val accentColor = settingsPref.getInt("theme_accent", Color.WHITE)
+        val bgColor = settingsPref.getInt("theme_bg", Color.parseColor("#0A0E21"))
+        val accentColor = settingsPref.getInt("theme_accent", Color.parseColor("#4DEEE1"))
         
         val rootLayout = findViewById<View>(R.id.mainRootLayout)
-        rootLayout.setBackgroundColor(bgColor)
+        rootLayout?.setBackgroundColor(bgColor)
         
-        // Update header elements
-        findViewById<TextView>(R.id.tvAppTitle).setTextColor(accentColor)
+        findViewById<TextView>(R.id.tvAppTitle)?.setTextColor(accentColor)
         
-        // Update Card backgrounds with slight transparency for "Glass" effect
         val cardAlpha = Color.argb(40, Color.red(accentColor), Color.green(accentColor), Color.blue(accentColor))
         
         val cards = listOf(
@@ -115,7 +150,7 @@ class MainActivity : AppCompatActivity() {
             findViewById<CardView>(id)?.setCardBackgroundColor(cardAlpha)
         }
 
-        findViewById<BottomNavigationView>(R.id.bottomNavigation).setBackgroundColor(bgColor)
+        findViewById<BottomNavigationView>(R.id.bottomNavigation)?.setBackgroundColor(bgColor)
     }
 
     private fun loadWeeklyInsight() {
@@ -126,44 +161,27 @@ class MainActivity : AppCompatActivity() {
         val weight = sharedPref.getString("saved_weight", "not set")
         val height = sharedPref.getString("saved_height", "not set")
         val age = sharedPref.getString("user_age", "not set")
-        
-        val config = generationConfig {
-            temperature = 0.7f
-        }
 
-        val safetySettings = listOf(
-            SafetySetting(HarmCategory.HARASSMENT, BlockThreshold.NONE),
-            SafetySetting(HarmCategory.HATE_SPEECH, BlockThreshold.NONE),
-            SafetySetting(HarmCategory.SEXUALLY_EXPLICIT, BlockThreshold.NONE),
-            SafetySetting(HarmCategory.DANGEROUS_CONTENT, BlockThreshold.NONE)
-        )
+        lifecycleScope.launch {
+            val engine = GlimmerEngine.getInstance(this@MainActivity) ?: return@launch
 
-        val generativeModel = GenerativeModel(
-            modelName = "gemini-2.0-flash",
-            apiKey = apiKey,
-            generationConfig = config,
-            safetySettings = safetySettings
-        )
-
-        CoroutineScope(Dispatchers.IO).launch {
             try {
-                val prompt = "You are Aura. Analyze these user stats: Weight=$weight, Height=$height, Age=$age. Provide a 2-sentence weekly wellness summary and a Quality of Life (Q.L) rating out of 10. format: [Summary] [Rating]"
-                val response = generativeModel.generateContent(prompt)
-                val resultText = response.text ?: ""
+                val prompt = "Context: Dyllan, Medical Student Path. Stats: W=$weight, H=$height, A=$age. Task: 2-sentence wellness summary. Format: [Summary] [Rating: X/10]"
                 
-                withContext(Dispatchers.Main) {
-                    if (resultText.contains("Rating")) {
-                        val rating = resultText.substringAfterLast("Rating").trim().removePrefix(":").trim()
-                        tvRating.text = "Q.L: $rating"
-                        tvSummary.text = resultText.substringBeforeLast("Rating").trim()
-                    } else {
-                        tvSummary.text = resultText
-                    }
+                // CRITICAL 8GB FIX: Run inference on Dispatchers.IO to prevent Main Thread lag
+                val result = withContext(Dispatchers.IO) {
+                    engine.generateResponse(prompt)
+                } ?: ""
+                
+                if (result.contains("Rating")) {
+                    val rating = result.substringAfterLast("Rating").trim().removePrefix(":").trim()
+                    tvRating.text = "Q.L: $rating"
+                    tvSummary.text = result.substringBeforeLast("Rating").trim()
+                } else {
+                    tvSummary.text = result
                 }
             } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    tvSummary.text = "Aura Error: ${e.message}"
-                }
+                // Silent catch to prevent UI disruption
             }
         }
     }
